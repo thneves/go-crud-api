@@ -25,6 +25,20 @@ var movies []Movie
 func main() {
 	route := mux.NewRouter()
 
+	movies = append(movies, Movie{
+		ID:       "1",
+		Isbn:     "4800",
+		Title:    "Now You See Me",
+		Director: &Director{"John", "Doe"},
+	})
+
+	movies = append(movies, Movie{
+		ID:       "2",
+		Isbn:     "4801",
+		Title:    "Dune",
+		Director: &Director{"Denis", "Villeneuve"},
+	})
+
 	route.HandleFunc("/movies", getMovies).Methods("GET")
 	route.HandleFunc("/movies/{id}", getMovies).Methods("GET")
 	route.HandleFunc("/movies", createMovie).Methods("POST")
