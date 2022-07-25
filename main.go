@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
@@ -41,7 +43,7 @@ func main() {
 	})
 
 	route.HandleFunc("/movies", getMovies).Methods("GET")
-	route.HandleFunc("/movies/{id}", getMovies).Methods("GET")
+	route.HandleFunc("/movies/{id}", getMovie).Methods("GET")
 	route.HandleFunc("/movies", createMovie).Methods("POST")
 	route.HandleFunc("/movies/{id}", updateMovie).Methods("PUT")
 	route.HandleFunc("/movies/{id}", deleteMovie).Methods("DELETE")
@@ -50,15 +52,15 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8000", route))
 }
 
-func getMovies(write http.ResponseWriter, response *http.Request) {
-	write.Header().Set("Cotent-Type", "application/json")
+func getMovies(write http.ResponseWriter, request *http.Request) {
+	write.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(write)
 	encoder.Encode(movies)
 }
 
-func deleteMovie(write http.ResponseWriter, response *http.Request) {
+func deleteMovie(write http.ResponseWriter, request *http.Request) {
 	write.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(response)
+	params := mux.Vars(request)
 
 	for index, item := range movies {
 		if item.ID == params["id"] {
@@ -66,4 +68,28 @@ func deleteMovie(write http.ResponseWriter, response *http.Request) {
 			break
 		}
 	}
+	encoder := json.NewEncoder(write)
+	encoder.Encode(movies)
+}
+
+func getMovie(write http.ResponseWriter, request *http.Request) {
+	write.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(request)
+	for _, item := range movies {
+		if item.ID == params["id"] {
+			encoder := json.NewEncoder(write)
+			encoder.Encode(item)
+			return
+		}
+	}
+}
+
+func createMovie(write http.ResponseWriter, request *http.Request) {
+	write.Header().Set("Content-Type", "application/json")
+	var movie Movie
+	_ = json.NewDecoder(request.Body).Decode(&movie)
+	movie.ID = strconv.Itoa(rand.Intn((100000)))
+	movies = append(movies, movie)
+	encoder := json.NewEncoder(write)
+	encoder.Encode(movie)
 }
