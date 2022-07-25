@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -47,4 +48,22 @@ func main() {
 
 	fmt.Printf("Server started at port 8000")
 	log.Fatal(http.ListenAndServe(":8000", route))
+}
+
+func getMovies(write http.ResponseWriter, response *http.Request) {
+	write.Header().Set("Cotent-Type", "application/json")
+	encoder := json.NewEncoder(write)
+	encoder.Encode(movies)
+}
+
+func deleteMovie(write http.ResponseWriter, response *http.Request) {
+	write.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(response)
+
+	for index, item := range movies {
+		if item.ID == params["id"] {
+			movies = append(movies[:index], movies[index+1:]...)
+			break
+		}
+	}
 }
