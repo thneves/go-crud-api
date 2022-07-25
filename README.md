@@ -13,6 +13,6 @@
 
 ### You can test the api using Postman, Insomnia, etc
 
-Fell free to mess up with it ;)
+Feel free to mess up with it ;)
 
 
